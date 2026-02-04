@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "566988026597",
+    "project_id": "emek-taksi",
+    "storage_bucket": "emek-taksi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566988026597:android:c1221c9140c9e1fddf9a0c",
+        "android_client_info": {
+          "package_name": "com.example.driver_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEpIy-PjQTXt0AGd4aKOTte-9PAF9TnhI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
