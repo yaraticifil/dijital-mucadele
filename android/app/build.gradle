@@ -12,9 +12,29 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
+def findFlutterFromPath = {
+    def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
+    def executableNames = isWindows ? ['flutter.bat', 'flutter.cmd', 'flutter'] : ['flutter']
+    def pathEntries = (System.getenv('PATH') ?: '').split(java.io.File.pathSeparator)
+
+    for (entry in pathEntries) {
+        for (name in executableNames) {
+            def flutterExecutable = new File(entry, name)
+            if (flutterExecutable.exists() && flutterExecutable.canExecute()) {
+                return flutterExecutable.parentFile?.parent
+            }
+        }
+    }
+    return null
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk') ?: System.getenv('FLUTTER_ROOT') ?: System.getenv('FLUTTER_HOME') ?: findFlutterFromPath()
 if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+    throw new GradleException("Flutter SDK not found. Define flutter.sdk in android/local.properties, set FLUTTER_ROOT/FLUTTER_HOME, or ensure flutter is available on PATH.")
+}
+
+if (!file("$flutterRoot/packages/flutter_tools/gradle/flutter.gradle").exists()) {
+    throw new GradleException("Flutter SDK path is invalid: $flutterRoot (missing packages/flutter_tools/gradle/flutter.gradle).")
 }
 
 apply plugin: 'com.android.application'
