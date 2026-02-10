@@ -1,4 +1,20 @@
 pluginManagement {
+    def findFlutterFromPath = {
+        def isWindows = System.getProperty("os.name").toLowerCase().contains("win")
+        def executableNames = isWindows ? ["flutter.bat", "flutter.cmd", "flutter"] : ["flutter"]
+        def pathEntries = (System.getenv("PATH") ?: "").split(java.io.File.pathSeparator)
+
+        for (entry in pathEntries) {
+            for (name in executableNames) {
+                def flutterExecutable = new File(entry, name)
+                if (flutterExecutable.exists() && flutterExecutable.canExecute()) {
+                    return flutterExecutable.parentFile?.parent
+                }
+            }
+        }
+        return null
+    }
+
     def flutterSdkPath = {
         def properties = new Properties()
         def localProperties = file("local.properties")
@@ -6,8 +22,11 @@ pluginManagement {
             localProperties.withInputStream { properties.load(it) }
         }
 
-        def flutterSdkPath = properties.getProperty("flutter.sdk") ?: System.getenv("FLUTTER_ROOT") ?: System.getenv("FLUTTER_HOME")
-        assert flutterSdkPath != null, "Flutter SDK not found. Set flutter.sdk in android/local.properties or set FLUTTER_ROOT/FLUTTER_HOME."
+        def flutterSdkPath = properties.getProperty("flutter.sdk") ?: System.getenv("FLUTTER_ROOT") ?: System.getenv("FLUTTER_HOME") ?: findFlutterFromPath()
+        assert flutterSdkPath != null, "Flutter SDK not found. Set flutter.sdk in android/local.properties, set FLUTTER_ROOT/FLUTTER_HOME, or ensure flutter is available on PATH."
+
+        def flutterGradlePath = new File(flutterSdkPath, "packages/flutter_tools/gradle")
+        assert flutterGradlePath.exists(), "Flutter SDK path is invalid: ${flutterSdkPath} (missing packages/flutter_tools/gradle)."
         return flutterSdkPath
     }()
 
