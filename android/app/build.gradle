@@ -12,9 +12,9 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
+def flutterRoot = localProperties.getProperty('flutter.sdk') ?: System.getenv('FLUTTER_ROOT') ?: System.getenv('FLUTTER_HOME')
 if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+    throw new GradleException("Flutter SDK not found. Define flutter.sdk in android/local.properties or set FLUTTER_ROOT/FLUTTER_HOME.")
 }
 
 apply plugin: 'com.android.application'
